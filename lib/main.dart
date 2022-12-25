@@ -116,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _controller.text = value;
       },
       onError: (err) {
+        eatItSnackBar("Try again!");
         print("getLinkStream error: $err");
       },
     );
