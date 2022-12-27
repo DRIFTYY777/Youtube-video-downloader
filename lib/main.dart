@@ -6,6 +6,7 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:open_file/open_file.dart';
+import 'package:media_scanner/media_scanner.dart';
 
 final GlobalKey<ScaffoldMessengerState> snackbarKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -124,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void Tusu(String url) async {
     final yt = YoutubeExplode();
+
     var status = await Permission.storage.status;
     if (!status.isGranted) {
       await Permission.storage.request();
@@ -140,6 +142,9 @@ class _MyHomePageState extends State<MyHomePage> {
       yt.close();
       progressBar_G = 0;
       eatItSnackBar("Downloaded");
+      MediaScanner.loadMedia(
+          path: downloadedPath.path); //update gallery after download
+
       showMyDialog(context, downloadedPath.path);
     } catch (e) {
       if (e.toString().contains("Invalid YouTube video ID or URL:")) {

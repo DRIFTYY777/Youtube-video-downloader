@@ -41,7 +41,9 @@ dependencies:
   downloads_path_provider_28: ^0.1.2
   receive_sharing_intent: ^1.4.5
   open_file: ^3.2.1
+  media_scanner: ^2.1.0
 
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -151,6 +151,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.5"
+  media_scanner:
+    dependency: "direct main"
+    description:
+      name: media_scanner
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   meta:
     dependency: transitive
     description:
