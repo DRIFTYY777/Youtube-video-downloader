@@ -11,6 +11,7 @@ class DownloadVideo {
   DownloadVideo(this.context);
   late File downloadedPath;
   CustomDialogBox dialogBox = CustomDialogBox();
+
   void Tusu(String url, Function(int progressbar) updatingProgresbar) async {
     final yt = YoutubeExplode();
     String tempDir = await systemPath.path();

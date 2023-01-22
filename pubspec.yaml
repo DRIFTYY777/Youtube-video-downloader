@@ -54,9 +54,19 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  msix: ^3.7.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+msix_config:
+  display_name: Youtube Download
+  publisher_display_name: Shiftyy_777
+  identity_name: company.suite.flutterapp
+  msix_version: 1.0.0.0
+  publisher: CN=Shiftyy_777
+  capabilities: internetClient
+
 
 # The following section is specific to Flutter packages.
 flutter:
