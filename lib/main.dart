@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:yt_video/Download.dart';
 
@@ -17,7 +15,6 @@ final GlobalKey<ScaffoldMessengerState> snackbarKey =
     GlobalKey<ScaffoldMessengerState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Things.permission();
 
   await things.permission();
   runApp(const MyApp());
@@ -56,11 +53,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 const List<String> list = <String>[
-  'Low Quality Video',
-  'High Quality Video',
+  'Low 144p',
+  'Low 240p',
+  'Medium 360p',
+  'Medium 480p SD',
+  'High 720p HD',
+  'High 1080p FHD',
+  'High 1440p QHD/2K',
+  'High 2160p UHD/4K',
+  'High 2880p 5K',
+  'High 3072p 6K',
+  'High 4320p 8K',
   'Audio only',
-  'Video only High Quality',
-  'Video only Low Quality'
+  'another' //Testing
 ];
 
 String thumbnails = 'https://cdn-icons-png.flaticon.com/512/1384/1384028.png';
@@ -204,14 +209,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     tooltip: 'Cancel Download / Clear',
                     onPressed: () {
-                      progressBar_G = 0;
-                      final yt = YoutubeExplode();
-                      yt.close();
-                      url_bae = "";
-                      controller.text = "";
-                      videoName = "";
-                      isAudio = false;
-                      thumbnails = thumb2;
+                      //progressBar_G = 0;
+                      //final yt = YoutubeExplode();
+                      //yt.close();
+                      // url_bae = "";
+                      // controller.text = "";
+                      // videoName = "";
+                      // isAudio = false;
+                      //thumbnails = thumb2;
+                      downloadVideo.downloadCancel();
                       setState(() {});
                       print("Cancel Download");
                     },

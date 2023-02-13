@@ -11,9 +11,9 @@ class DownloadVideo {
   DownloadVideo(this.context);
   late File downloadedPath;
   CustomDialogBox dialogBox = CustomDialogBox();
+  final yt = YoutubeExplode();
 
   void Tusu(String url, Function(int progressbar) updatingProgresbar) async {
-    final yt = YoutubeExplode();
     String tempDir = await systemPath.path();
     try {
       await download(
@@ -42,7 +42,9 @@ class DownloadVideo {
     }
   }
 
-  Future<void> download(
+  var output;
+
+  Future<int> download(
       String id, String dir, Function(int progress) update) async {
     final yt = YoutubeExplode();
     var streams, file;
@@ -53,18 +55,48 @@ class DownloadVideo {
     // Get the video manifest.
     var manifest = await yt.videos.streamsClient.getManifest(id);
 
-    if (dropdownValue == "High Quality Video") {
-      streams = manifest.muxed.sortByVideoQuality();
-    } else if (dropdownValue == "Low Quality Video") {
-      streams = manifest.muxed;
-    } else if (dropdownValue == "Audio only") {
+    if (dropdownValue == "Audio only") {
       streams = manifest.audioOnly;
       isAudio = true;
-    } else if (dropdownValue == "Video only High Quality") {
-      streams = manifest.videoOnly.sortByVideoQuality();
-    } else if (dropdownValue == "Video only Low Quality") {
-      streams = manifest.videoOnly;
+    } else if (dropdownValue == 'Low 144p') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.low144);
+    } else if (dropdownValue == 'Low 240p') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.low240);
+    } else if (dropdownValue == 'Medium 360p') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.medium360);
+    } else if (dropdownValue == 'Medium 480p SD') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.medium480);
+    } else if (dropdownValue == 'High 720p HD') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.high720);
+    } else if (dropdownValue == 'High 1080p FHD') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.high1080);
+    } else if (dropdownValue == 'High 1440p QHD/2K') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.high1440);
+    } else if (dropdownValue == 'High 2160p UHD/4K') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.high2160);
+    } else if (dropdownValue == 'High 2880p 5K') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.high2880);
+    } else if (dropdownValue == 'High 3072p 6K') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.high3072);
+    } else if (dropdownValue == 'High 4320p 8K') {
+      streams = manifest.ssss
+          .where((element) => element.videoQuality == VideoQuality.high4320);
+    } else if (dropdownValue == 'another') {
+      print(manifest.ssss);
+      return 0;
     }
+
+    ///
 
     // Get the audio track with the highest bitrate.
     var audio = streams.first;
@@ -84,9 +116,9 @@ class DownloadVideo {
         .replaceAll('|', '');
 
     if (isAudio == true) {
-      file = File('${dir}/$fileName' + '.mp3');
+      file = File('$dir/$fileName.mp3');
     } else {
-      file = File('${dir}/$fileName');
+      file = File('$dir/$fileName');
     }
 
     print(file.path);
@@ -102,7 +134,7 @@ class DownloadVideo {
     file.createSync();
 
     // Open the file in writeAppend.
-    var output = file.openWrite(mode: FileMode.writeOnlyAppend);
+    output = file.openWrite(mode: FileMode.writeOnlyAppend);
 
     // Track the file download status.
     var len = audio.size.totalBytes;
@@ -117,10 +149,27 @@ class DownloadVideo {
       count += data.length;
       progressBar_G = ((count / len) * 100).ceil();
       output.add(data);
-      print("Progress   ${progressBar_G}");
+      print("Progress   $progressBar_G");
       // setState(() {});
       update(progressBar_G);
     }
+    //await output.close();
+    await output.flush();
     await output.close();
+    return 0;
+  }
+
+  void downloadCancel() {
+    progressBar_G = 0;
+    yt.close();
+    url_bae = "";
+    controller.text = "";
+    videoName = "";
+    isAudio = false;
+    if (output != null) {
+      output.flush();
+      //output.close();
+    }
+    thumbnails = thumb2;
   }
 }
