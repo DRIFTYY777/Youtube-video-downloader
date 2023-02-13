@@ -74,8 +74,9 @@ class DownloadVideo {
       streams = manifest.ssss
           .where((element) => element.videoQuality == VideoQuality.high720);
     } else if (dropdownValue == 'High 1080p FHD') {
-      streams = manifest.ssss
-          .where((element) => element.videoQuality == VideoQuality.high1080);
+      streams = manifest.ssss.where((element) =>
+          element.videoQuality == VideoQuality.high1080 &&
+          element.container.name == "mp4"); ////////////////////////////////////
     } else if (dropdownValue == 'High 1440p QHD/2K') {
       streams = manifest.ssss
           .where((element) => element.videoQuality == VideoQuality.high1440);
