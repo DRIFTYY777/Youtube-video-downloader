@@ -58,14 +58,21 @@ const List<String> list = <String>[
   'Medium 360p',
   'Medium 480p SD',
   'High 720p HD',
-  // 'High 1080p FHD',
-  // 'High 1440p QHD/2K',
-  // 'High 2160p UHD/4K',
-  // 'High 2880p 5K',
-  // 'High 3072p 6K',
-  // 'High 4320p 8K',
   'Audio only'
 ];
+
+// 'Low 144p',
+//   'Low 240p',
+//   'Medium 360p',
+//   'Medium 480p SD',
+//   'High 720p HD',
+// 'High 1080p FHD',
+// 'High 1440p QHD/2K',
+// 'High 2160p UHD/4K',
+// 'High 2880p 5K',
+// 'High 3072p 6K',
+// 'High 4320p 8K',
+// 'Audio only'
 
 String thumbnails = 'https://cdn-icons-png.flaticon.com/512/1384/1384028.png';
 String thumb2 = 'https://cdn-icons-png.flaticon.com/512/1384/1384028.png';
