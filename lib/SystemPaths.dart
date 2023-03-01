@@ -5,14 +5,17 @@ import 'package:ffi/ffi.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:win32/win32.dart';
 
+///
+/// Contains the path of the download folder.
 class SystemPaths {
-  static const unLen = 256;
+  static const _unLen = 256;
 
-  String getUsername() {
+  /// Getting username of windows
+  _getUsername() {
     return using<String>((arena) {
-      final buffer = arena.allocate<Utf16>(sizeOf<Uint16>() * (unLen + 1));
+      final buffer = arena.allocate<Utf16>(sizeOf<Uint16>() * (_unLen + 1));
       final bufferSize = arena.allocate<Uint32>(sizeOf<Uint32>());
-      bufferSize.value = unLen + 1;
+      bufferSize.value = _unLen + 1;
       final result = GetUserName(buffer, bufferSize);
       if (result == 0) {
         GetLastError();
@@ -23,17 +26,26 @@ class SystemPaths {
     });
   }
 
-  path() async {
+  /// Returning Paths for Android and Windows.
+  ///
+  /// [android] : /storage/emulated/0/Download
+  ///
+  /// [windows] : C:\Users\username\Downloads
+  pathProvider() async {
+    ///
+    /// Checking for permission
+    /// Asking for permission
     var status = await Permission.storage.status;
     if (!status.isGranted) {
       await Permission.storage.request();
     }
-    // the downloads folder path
+
+    /// Returning path for android and windows depends on platform
     if (Platform.isAndroid) {
       Directory? tempDir = await DownloadsPathProvider.downloadsDirectory;
       return tempDir!.path;
     } else if (Platform.isWindows) {
-      String username = getUsername();
+      String username = _getUsername();
       String pcDownloadPath = "C:\\Users\\$username\\Downloads";
       return pcDownloadPath;
     }

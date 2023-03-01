@@ -50,7 +50,7 @@ android {
 
         // minSdkVersion flutter.minSdkVersion
 
-        minSdkVersion 21
+        minSdkVersion 24
        
         
         targetSdkVersion flutter.targetSdkVersion

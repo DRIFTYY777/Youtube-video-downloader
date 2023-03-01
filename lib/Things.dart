@@ -1,12 +1,19 @@
+import 'main.dart';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'main.dart';
-
+///Things contains all the methods and variables that are used in the app
+///
+///Also contains the basics [Functions]
 class Things {
+  ///
+  /// [SnackBar] is used to show Message in the bottom of the screen
+  ///
+  /// Only one param [message] is required
   void eatItSnackBar(String message) {
     SnackBar snackBar = SnackBar(
-      backgroundColor: const Color.fromARGB(214, 42, 240, 190),
+      backgroundColor: const Color.fromARGB(255, 43, 224, 248),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       dismissDirection: DismissDirection.startToEnd,
       behavior: SnackBarBehavior.floating,
@@ -20,6 +27,23 @@ class Things {
     snackbarKey.currentState?.showSnackBar(snackBar);
   }
 
+  ///@permission()
+  ///
+  /// [Permission] is used to ask for permission to access the storage
+  ///
+  /// And also to check if the permission is granted or not
+  ///
+  /// If the permission is not granted then it will ask for permission
+  ///
+  /// And if the permission is granted then it will do nothing
+  ///
+  /// And if the permission is denied then it will ask for permission
+  ///
+  /// And if the permission is denied permanently then it will show a message
+  ///
+  /// That the permission is denied permanently
+  ///
+  /// And if the permission is restricted then it will show a message
   Future<void> permission() async {
     var status = await Permission.storage.status;
     if (status.isDenied) {
@@ -40,5 +64,11 @@ class Things {
       eatItSnackBar(
           "The OS restricts access, for example because of parental controls.");
     }
+  }
+
+  String combineAudioVideo(String audio, String video) {
+    String output = "";
+
+    return output;
   }
 }

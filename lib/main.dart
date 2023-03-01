@@ -58,14 +58,13 @@ const List<String> list = <String>[
   'Medium 360p',
   'Medium 480p SD',
   'High 720p HD',
-  'High 1080p FHD',
-  'High 1440p QHD/2K',
-  'High 2160p UHD/4K',
-  'High 2880p 5K',
-  'High 3072p 6K',
-  'High 4320p 8K',
-  'Audio only',
-  'another' //Testing
+  // 'High 1080p FHD',
+  // 'High 1440p QHD/2K',
+  // 'High 2160p UHD/4K',
+  // 'High 2880p 5K',
+  // 'High 3072p 6K',
+  // 'High 4320p 8K',
+  'Audio only'
 ];
 
 String thumbnails = 'https://cdn-icons-png.flaticon.com/512/1384/1384028.png';
@@ -136,13 +135,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller: controller,
                 keyboardType: TextInputType.visiblePassword,
                 decoration: const InputDecoration(
-                  label: Text('Enter Url'),
+                  label: Text('ENTER URL'),
                 ),
                 style: const TextStyle(
                   fontStyle: FontStyle.normal,
                   fontSize: 18,
+                  color: Color.fromARGB(255, 43, 224, 248),
                 ),
                 cursorWidth: 2,
+                cursorHeight: 25,
                 onChanged: (value) {
                   setState(() {
                     url_bae = value;
@@ -155,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: LinearProgressIndicator(
                 value: progressBar_G / 100,
                 backgroundColor: const Color.fromARGB(0, 0, 0, 0),
-                color: const Color.fromARGB(255, 42, 240, 190),
+                color: const Color.fromARGB(255, 43, 224, 248),
               ),
             ),
             Padding(
@@ -181,12 +182,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Color.fromARGB(0, 42, 240, 190),
                     ),
                     onPressed: () {
-                      things.eatItSnackBar("Love You Darling");
+                      things.eatItSnackBar("Just for padding");
                     },
                   ),
                 ),
                 CupertinoButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (url_bae.isEmpty) {
                       things.eatItSnackBar("Please Enter Url");
                     } else {
@@ -196,8 +197,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         });
                       });
                     }
+
+                    ///
+                    //things.changeVideoFormat(
+                    //    'C:\\Users\\Driftyy_777\\Downloads\\Not_Working.mp4',
+                    //    'C:\\Users\\Driftyy_777\\Downloads\\Working.mp4');
                   },
-                  color: const Color.fromARGB(255, 42, 240, 190),
+                  color: const Color.fromARGB(255, 43, 224, 248),
                   child: const Text('Download Video'),
                 ),
                 Padding(
@@ -205,7 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: IconButton(
                     icon: const Icon(
                       Icons.cancel,
-                      color: Color.fromARGB(255, 42, 240, 190),
+                      color: Color.fromARGB(255, 43, 224, 248),
                     ),
                     tooltip: 'Cancel Download / Clear',
                     onPressed: () {
@@ -236,10 +242,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   fontSize: 18,
                 ),
                 borderRadius: BorderRadius.circular(8),
-                dropdownColor: const Color.fromARGB(255, 42, 240, 190),
+                dropdownColor: Color.fromARGB(255, 0, 0, 0),
                 underline: Container(
                   height: 2,
-                  color: const Color.fromARGB(255, 42, 240, 190),
+                  color: Color.fromARGB(255, 43, 224, 248),
                 ),
                 onChanged: (String? value) {
                   // This is called when the user selects an item.

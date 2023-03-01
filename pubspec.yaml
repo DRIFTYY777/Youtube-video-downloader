@@ -46,6 +46,7 @@ dependencies:
   receive_sharing_intent: ^1.4.5
   open_file: ^3.2.1
   media_scanner: ^2.1.0
+  
 
   
 dev_dependencies:
