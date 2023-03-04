@@ -75,12 +75,11 @@ class DownloadVideo {
     }
     //
     else if (dropdownValue == 'Low 144p') {
-      streams = manifest.muxed
-          .where((element) => element.videoQuality == VideoQuality.low144);
+      streams = manifest.muxed;
     }
     //
     else if (dropdownValue == 'Low 240p') {
-      streams = manifest.videoOnly
+      streams = manifest.muxed
           .where((element) => element.videoQuality == VideoQuality.low240);
     }
     //
