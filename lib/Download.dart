@@ -32,7 +32,6 @@ class DownloadVideo {
         finishedOutput =
             things.combineAudioVideo(tempAudioOutput, tempVideoOutput);
       }
-
       yt.close();
       progressBar_G = 0;
 
