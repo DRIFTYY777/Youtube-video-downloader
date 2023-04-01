@@ -488,7 +488,7 @@ packages:
   youtube_explode_dart:
     dependency: "direct main"
     description:
-      path: "packages/youtube_explode_dart"
+      path: youtube_explode_dart
       relative: true
     source: path
     version: "1.12.3"
