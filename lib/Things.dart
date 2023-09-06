@@ -1,3 +1,5 @@
+import 'package:muxer/muxer.dart';
+
 import 'main.dart';
 
 import 'package:flutter/material.dart';
@@ -66,9 +68,24 @@ class Things {
     }
   }
 
-  String combineAudioVideo(String audio, String video) {
-    String output = "";
+  String output = "C:\\Users\\Driftyy_777\\Downloads\\muxed.mp4";
 
+  Future<String> combineAudioVideo(String audio, String video) async {
+    late String _result;
+
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    // We also handle the message potentially returning null.
+    try {
+      _result = await Muxer.muxAudioVideo(
+            audioPath: audio,
+            videoPath: video,
+            outputPath: '${output}/muxed.mp4',
+          ) ??
+          'Unknown error';
+    } catch (error) {
+      _result = '$error';
+      print(_result + "awdawd");
+    }
     return output;
   }
 }
