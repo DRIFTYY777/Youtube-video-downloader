@@ -37,12 +37,17 @@ dependencies:
 
   youtube_explode_dart: 
     path: youtube_explode_dart
-      
+
+
+  muxer:
+    path: muxer_dart
+  
+  
+  
 
   permission_handler: ^10.1.0
   path_provider: ^2.0.11
   percent_indicator: ^4.2.2
-  downloads_path_provider_28: ^0.1.2
   receive_sharing_intent: ^1.4.5
   open_file: ^3.2.1
   media_scanner: ^2.1.0

@@ -18,8 +18,8 @@ class ChannelUploadPage extends YoutubePage<_InitialData> {
   late final List<ChannelVideo> uploads = initialData.uploads;
 
   /// InitialData
-  ChannelUploadPage.id(this.channelId, _InitialData? initialData)
-      : super(null, null, initialData);
+  ChannelUploadPage.id(this.channelId, super.initialData)
+      : super.fromInitialData();
 
   ///
   Future<ChannelUploadPage?> nextPage(YoutubeHttpClient httpClient) async {
@@ -33,11 +33,14 @@ class ChannelUploadPage extends YoutubePage<_InitialData> {
 
   ///
   static Future<ChannelUploadPage> get(
-      YoutubeHttpClient httpClient, String channelId, String sorting) {
-    var url =
+    YoutubeHttpClient httpClient,
+    String channelId,
+    String sorting,
+  ) {
+    final url =
         'https://www.youtube.com/channel/$channelId/videos?view=0&sort=$sorting&flow=grid';
     return retry(httpClient, () async {
-      var raw = await httpClient.getString(url);
+      final raw = await httpClient.getString(url);
       return ChannelUploadPage.parse(raw, channelId);
     });
   }
@@ -48,7 +51,7 @@ class ChannelUploadPage extends YoutubePage<_InitialData> {
 }
 
 class _InitialData extends InitialData {
-  _InitialData(JsonMap root) : super(root);
+  _InitialData(super.root);
 
   late final JsonMap? continuationContext = getContinuationContext();
 
@@ -195,7 +198,7 @@ class _InitialData extends InitialData {
       video.get('thumbnail')?.getList('thumbnails')?.last.getT<String>('url') ??
           '',
       video.get('publishedTimeText')?.getT<String>('simpleText') ?? '',
-      video.get('viewCountText')?.getT<String>('simpleText')?.parseInt() ?? 0,
+      video.get('viewCountText')?.getT<String>('simpleText').parseInt() ?? 0,
     );
   }
 }

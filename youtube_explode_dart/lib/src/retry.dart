@@ -1,15 +1,13 @@
-library _youtube_explode.retry;
-
 import 'dart:async';
-
-import 'package:http/http.dart';
 
 import '../youtube_explode_dart.dart';
 
 /// Run the [function] each time an exception is thrown until the retryCount
 /// is 0.
 Future<T> retry<T>(
-    YoutubeHttpClient? client, FutureOr<T> Function() function) async {
+  YoutubeHttpClient? client,
+  FutureOr<T> Function() function,
+) async {
   var retryCount = 5;
 
   // ignore: literal_only_boolean_expressions
@@ -33,17 +31,11 @@ Future<T> retry<T>(
 
 /// Get "retry" cost of each YoutubeExplode exception.
 int getExceptionCost(Exception e) {
-  if (e is TransientFailureException ||
-      e is FormatException ||
-      e is SearchItemSectionException ||
-      e is ClientException) {
-    return 1;
-  }
   if (e is RequestLimitExceededException) {
     return 2;
   }
   if (e is FatalFailureException) {
     return 3;
   }
-  return 100;
+  return 1;
 }

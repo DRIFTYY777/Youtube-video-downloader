@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: non_constant_identifier_names, require_trailing_commas
+
 part of 'video_only_stream_info.dart';
 
 // **************************************************************************
@@ -34,7 +36,7 @@ Map<String, dynamic> _$VideoOnlyStreamInfoToJson(
       'bitrate': instance.bitrate,
       'videoCodec': instance.videoCodec,
       'qualityLabel': instance.qualityLabel,
-      'videoQuality': _$VideoQualityEnumMap[instance.videoQuality],
+      'videoQuality': _$VideoQualityEnumMap[instance.videoQuality]!,
       'videoResolution': instance.videoResolution,
       'framerate': instance.framerate,
       'fragments': instance.fragments,

@@ -1,5 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+// ignore_for_file: non_constant_identifier_names, require_trailing_commas
+
 part of 'muxed_stream_info.dart';
 
 // **************************************************************************
@@ -31,7 +33,7 @@ Map<String, dynamic> _$MuxedStreamInfoToJson(MuxedStreamInfo instance) =>
       'bitrate': instance.bitrate,
       'audioCodec': instance.audioCodec,
       'videoCodec': instance.videoCodec,
-      'videoQuality': _$VideoQualityEnumMap[instance.videoQuality],
+      'videoQuality': _$VideoQualityEnumMap[instance.videoQuality]!,
       'videoResolution': instance.videoResolution,
       'framerate': instance.framerate,
       'codec': mediaTypeToJson(instance.codec),

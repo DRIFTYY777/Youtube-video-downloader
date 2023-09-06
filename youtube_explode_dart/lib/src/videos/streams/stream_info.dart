@@ -5,7 +5,9 @@ import '../videos.dart';
 
 /// Generic YouTube media stream.
 mixin StreamInfo {
-  var videoQuality;
+  /// Whether the stream is throttled or not.
+  bool get isThrottled =>
+      url.queryParameters['ratebypass']?.toLowerCase() != 'yes';
 
   /// Stream tag.
   /// Uniquely identifies a stream inside a manifest.
@@ -60,8 +62,7 @@ extension StreamInfoIterableExt<T extends StreamInfo> on Iterable<T> {
         if (e is VideoStreamInfo) e.framerate,
         if (e is VideoOnlyStreamInfo) 'video only',
         if (e is MuxedStreamInfo) 'muxed',
-        if (e is AudioOnlyStreamInfo) 'audio only',
-        e.size
+        e.size,
       ]);
     }
     return column.toString();

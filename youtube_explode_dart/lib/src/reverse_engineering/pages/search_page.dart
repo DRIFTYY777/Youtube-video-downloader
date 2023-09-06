@@ -12,15 +12,15 @@ class SearchPage extends YoutubePage<_InitialData> {
   ///
   final String queryString;
 
-  late final List<BaseSearchContent> searchContent = initialData.searchContent;
+  late final List<SearchResult> searchContent = initialData.searchContent;
 
-  late final List<dynamic> relatedVideos = initialData.relatedVideos;
+  late final List<SearchResult> relatedVideos = initialData.relatedVideos;
 
   late final int estimatedResults = initialData.estimatedResults;
 
   /// InitialData
   SearchPage.id(this.queryString, _InitialData initialData)
-      : super(null, null, initialData);
+      : super.fromInitialData(initialData);
 
   Future<SearchPage?> nextPage(YoutubeHttpClient httpClient) async {
     if (initialData.continuationToken?.isEmpty == null ||
@@ -28,19 +28,21 @@ class SearchPage extends YoutubePage<_InitialData> {
       return null;
     }
 
-    var data =
+    final data =
         await httpClient.sendPost('search', initialData.continuationToken!);
     return SearchPage.id(queryString, _InitialData(data));
   }
 
   ///
   static Future<SearchPage> get(
-      YoutubeHttpClient httpClient, String queryString,
-      {SearchFilter filter = const SearchFilter('')}) {
-    var url =
+    YoutubeHttpClient httpClient,
+    String queryString, {
+    SearchFilter filter = const SearchFilter(''),
+  }) {
+    final url =
         'https://www.youtube.com/results?search_query=${Uri.encodeQueryComponent(queryString)}&sp=${filter.value}';
     return retry(httpClient, () async {
-      var raw = await httpClient.getString(url);
+      final raw = await httpClient.getString(url);
       return SearchPage.parse(raw, queryString);
     });
     // ask for next page
@@ -52,7 +54,7 @@ class SearchPage extends YoutubePage<_InitialData> {
 }
 
 class _InitialData extends InitialData {
-  _InitialData(JsonMap root) : super(root);
+  _InitialData(super.root);
 
   List<JsonMap>? getContentContext() {
     if (root['contents'] != null) {
@@ -81,7 +83,7 @@ class _InitialData extends InitialData {
 
   String? _getContinuationToken() {
     if (root['contents'] != null) {
-      var contents = root
+      final contents = root
           .get('contents')
           ?.get('twoColumnSearchResultsRenderer')
           ?.get('primaryContents')
@@ -114,18 +116,20 @@ class _InitialData extends InitialData {
   }
 
   // Contains only [SearchVideo] or [SearchPlaylist]
-  late final List<BaseSearchContent> searchContent =
+  late final List<SearchResult> searchContent =
       getContentContext()?.map(_parseContent).whereNotNull().toList() ??
           const [];
 
-  List<dynamic> get relatedVideos =>
+  List<SearchResult> get relatedVideos =>
       getContentContext()
           ?.where((e) => e['shelfRenderer'] != null)
-          .map((e) => e
-              .get('shelfRenderer')
-              ?.get('content')
-              ?.get('verticalListRenderer')
-              ?.getList('items'))
+          .map(
+            (e) => e
+                .get('shelfRenderer')
+                ?.get('content')
+                ?.get('verticalListRenderer')
+                ?.getList('items'),
+          )
           .firstOrNull
           ?.map(_parseContent)
           .whereNotNull()
@@ -137,36 +141,37 @@ class _InitialData extends InitialData {
   late final int estimatedResults =
       int.parse(root.getT<String>('estimatedResults') ?? '0');
 
-  BaseSearchContent? _parseContent(JsonMap? content) {
+  SearchResult? _parseContent(JsonMap? content) {
     if (content == null) {
       return null;
     }
     if (content['videoRenderer'] != null) {
-      var renderer = content.get('videoRenderer')!;
+      final renderer = content.get('videoRenderer')!;
 
       //       root.get('ownerText')?.getT<List<dynamic>>('runs')?.parseRuns() ??
       return SearchVideo(
-          VideoId(renderer.getT<String>('videoId')!),
+        VideoId(renderer.getT<String>('videoId')!),
+        renderer
+            .get('title')!
+            .getT<List<dynamic>>('runs')!
+            .cast<Map<dynamic, dynamic>>()
+            .parseRuns(),
+        renderer
+            .get('ownerText')!
+            .getT<List<dynamic>>('runs')!
+            .cast<Map<dynamic, dynamic>>()
+            .parseRuns(),
+        renderer
+                .getList('detailedMetadataSnippets')
+                ?.firstOrNull
+                ?.get('snippetText')
+                ?.getT<List<dynamic>>('runs')
+                ?.cast<Map<dynamic, dynamic>>()
+                .parseRuns() ??
+            '',
+        renderer.get('lengthText')?.getT<String>('simpleText') ?? '',
+        int.parse(
           renderer
-              .get('title')!
-              .getT<List<dynamic>>('runs')!
-              .cast<Map<dynamic, dynamic>>()
-              .parseRuns(),
-          renderer
-              .get('ownerText')!
-              .getT<List<dynamic>>('runs')!
-              .cast<Map<dynamic, dynamic>>()
-              .parseRuns(),
-          renderer
-                  .getList('detailedMetadataSnippets')
-                  ?.firstOrNull
-                  ?.get('snippetText')
-                  ?.getT<List<dynamic>>('runs')
-                  ?.cast<Map<dynamic, dynamic>>()
-                  .parseRuns() ??
-              '',
-          renderer.get('lengthText')?.getT<String>('simpleText') ?? '',
-          int.parse(renderer
                   .get('viewCountText')
                   ?.getT<String>('simpleText')
                   ?.stripNonDigits()
@@ -178,30 +183,33 @@ class _InitialData extends InitialData {
                   ?.getT<String>('text')
                   ?.stripNonDigits()
                   .nullIfWhitespace ??
-              '0'),
-          (renderer.get('thumbnail')?.getList('thumbnails') ?? const [])
-              .map((e) =>
-                  Thumbnail(Uri.parse(e['url']), e['height'], e['width']))
-              .toList(),
-          renderer.get('publishedTimeText')?.getT<String>('simpleText'),
-          renderer
-                  .get('viewCountText')
-                  ?.getList('runs')
-                  ?.elementAtSafe(1)
-                  ?.getT<String>('text')
-                  ?.trim() ==
-              'watching',
-          renderer
-              .get('ownerText')!
-              .getList('runs')!
-              .first
-              .get('navigationEndpoint')!
-              .get('browseEndpoint')!
-              .getT<String>('browseId')!);
+              '0',
+        ),
+        (renderer.get('thumbnail')?.getList('thumbnails') ?? const [])
+            .map(
+              (e) => Thumbnail(Uri.parse(e['url']), e['height'], e['width']),
+            )
+            .toList(),
+        renderer.get('publishedTimeText')?.getT<String>('simpleText'),
+        renderer
+                .get('viewCountText')
+                ?.getList('runs')
+                ?.elementAtSafe(1)
+                ?.getT<String>('text')
+                ?.trim() ==
+            'watching',
+        renderer
+            .get('ownerText')!
+            .getList('runs')!
+            .first
+            .get('navigationEndpoint')!
+            .get('browseEndpoint')!
+            .getT<String>('browseId')!,
+      );
     }
     if (content['radioRenderer'] != null ||
         content['playlistRenderer'] != null) {
-      var renderer =
+      final renderer =
           (content.get('radioRenderer') ?? content.get('playlistRenderer'))!;
 
       return SearchPlaylist(
@@ -220,20 +228,20 @@ class _InitialData extends InitialData {
       );
     }
     if (content['channelRenderer'] != null) {
-      var renderer = content.get('channelRenderer')!;
+      final renderer = content.get('channelRenderer')!;
 
       return SearchChannel(
-          ChannelId(renderer.getT<String>('channelId')!),
-          renderer.get('title')!.getT<String>('simpleText')!,
-          renderer.get('descriptionSnippet')?.getList('runs')?.parseRuns() ??
-              '',
-          renderer
-                  .get('videoCountText')
-                  ?.getList('runs')
-                  ?.first
-                  .getT<String>('text')
-                  ?.parseInt() ??
-              -1);
+        ChannelId(renderer.getT<String>('channelId')!),
+        renderer.get('title')!.getT<String>('simpleText')!,
+        renderer.get('descriptionSnippet')?.getList('runs')?.parseRuns() ?? '',
+        renderer
+                .get('videoCountText')
+                ?.getList('runs')
+                ?.first
+                .getT<String>('text')
+                .parseInt() ??
+            -1,
+      );
     }
     // Here ignore 'horizontalCardListRenderer' & 'shelfRenderer'
     return null;

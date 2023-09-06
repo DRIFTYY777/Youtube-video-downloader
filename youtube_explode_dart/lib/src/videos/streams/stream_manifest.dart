@@ -36,13 +36,6 @@ class StreamManifest {
   late final UnmodifiableListView<VideoOnlyStreamInfo> videoOnly =
       UnmodifiableListView(streams.whereType<VideoOnlyStreamInfo>());
 
-  // Every thing between these line's is added by me
-
-  late final UnmodifiableListView<StreamInfo> ssss =
-      UnmodifiableListView(streams.whereType<StreamInfo>());
-
-  // Every thing between these line's is added by me
-
   @override
   String toString() => streams.describe();
 }

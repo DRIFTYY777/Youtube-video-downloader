@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as parser;
+import 'package:meta/meta.dart';
 
 import '../../../youtube_explode_dart.dart';
 import '../../extensions/helpers_extension.dart';
@@ -25,15 +26,15 @@ class WatchPage extends YoutubePage<_InitialData> {
   // ignore: overridden_fields
   final Document root;
 
-  ///
+  @internal
   final String visitorInfoLive;
 
-  ///
+  @internal
   final String ysc;
 
   ///
   String? get sourceUrl {
-    var url = root
+    final url = root
         .querySelectorAll('script')
         .map((e) => e.attributes['src'])
         .whereNotNull()
@@ -54,32 +55,36 @@ class WatchPage extends YoutubePage<_InitialData> {
   ///
   int get videoLikeCount =>
       initialData.likesCount ??
-      int.parse(_videoLikeExp
-              .firstMatch(root.outerHtml)
-              ?.group(1)
-              ?.stripNonDigits()
-              .nullIfWhitespace ??
-          root
-              .querySelector('.like-button-renderer-like-button')
-              ?.text
-              .stripNonDigits()
-              .nullIfWhitespace ??
-          '0');
+      int.parse(
+        _videoLikeExp
+                .firstMatch(root.outerHtml)
+                ?.group(1)
+                ?.stripNonDigits()
+                .nullIfWhitespace ??
+            root
+                .querySelector('.like-button-renderer-like-button')
+                ?.text
+                .stripNonDigits()
+                .nullIfWhitespace ??
+            '0',
+      );
 
   ///
   int get videoDislikeCount =>
       initialData.disLikesCount ??
-      int.parse(_videoDislikeExp
-              .firstMatch(root.outerHtml)
-              ?.group(1)
-              ?.stripNonDigits()
-              .nullIfWhitespace ??
-          root
-              .querySelector('.like-button-renderer-dislike-button')
-              ?.text
-              .stripNonDigits()
-              .nullIfWhitespace ??
-          '0');
+      int.parse(
+        _videoDislikeExp
+                .firstMatch(root.outerHtml)
+                ?.group(1)
+                ?.stripNonDigits()
+                .nullIfWhitespace ??
+            root
+                .querySelector('.like-button-renderer-dislike-button')
+                ?.text
+                .stripNonDigits()
+                .nullIfWhitespace ??
+            '0',
+      );
 
   String? get commentsContinuation => initialData.commentsContinuation;
 
@@ -106,11 +111,14 @@ class WatchPage extends YoutubePage<_InitialData> {
         .querySelectorAll('script')
         .map((e) => e.text)
         .toList(growable: false);
+    //TODO: Implement player response extraction from PlayerConfig if extracting from the script fails.
     return scriptText.extractGenericData(
-        ['var ytInitialPlayerResponse = '],
-        (root) => PlayerResponse(root),
-        () => TransientFailureException(
-            'Failed to retrieve initial player response, please report this to the project GitHub page.'));
+      ['var ytInitialPlayerResponse = '],
+      (root) => PlayerResponse(root),
+      () => TransientFailureException(
+        'Failed to retrieve initial player response, please report this to the project GitHub page.',
+      ),
+    );
   }
 
   ///
@@ -121,14 +129,15 @@ class WatchPage extends YoutubePage<_InitialData> {
   ///
   static Future<WatchPage> get(YoutubeHttpClient httpClient, String videoId) {
     final url = Uri.parse(
-        'https://youtube.com/watch?v=$videoId&bpctr=9999999999&hl=en');
+      'https://youtube.com/watch?v=$videoId&bpctr=9999999999&hl=en',
+    );
     return retry(httpClient, () async {
-      var req = await httpClient.get(url, validate: true);
+      final req = await httpClient.get(url, validate: true);
 
-      var cookies = req.headers['set-cookie']!;
-      var visitorInfoLive = _visitorInfoLiveExp.firstMatch(cookies)?.group(1);
-      var ysc = _yscExp.firstMatch(cookies)!.group(1)!;
-      var result = WatchPage.parse(req.body, visitorInfoLive ?? '', ysc);
+      final cookies = req.headers['set-cookie']!;
+      final visitorInfoLive = _visitorInfoLiveExp.firstMatch(cookies)?.group(1);
+      final ysc = _yscExp.firstMatch(cookies)!.group(1)!;
+      final result = WatchPage.parse(req.body, visitorInfoLive ?? '', ysc);
 
       if (!result.isOk) {
         throw TransientFailureException('Video watch page is broken.');
@@ -160,7 +169,7 @@ class WatchPlayerConfig implements PlayerConfigBase {
 }
 
 class _InitialData extends InitialData {
-  _InitialData(JsonMap root) : super(root);
+  _InitialData(super.root);
 
   late final int? likesCount = _getLikes();
   late final int? disLikesCount = _getDislikes();

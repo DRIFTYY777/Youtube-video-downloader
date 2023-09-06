@@ -10,11 +10,11 @@ class VideoClient {
   final YoutubeHttpClient _httpClient;
 
   /// Queries related to media streams of YouTube videos.
-  final StreamsClient streamsClient;
+  final StreamClient streamsClient;
 
   /// Queries related to media streams of YouTube videos.
   /// Alias of [streamsClient].
-  StreamsClient get streams => streamsClient;
+  StreamClient get streams => streamsClient;
 
   /// Queries related to closed captions of YouTube videos.
   final ClosedCaptionClient closedCaptions;
@@ -28,39 +28,43 @@ class VideoClient {
 
   /// Initializes an instance of [VideoClient].
   VideoClient(this._httpClient)
-      : streamsClient = StreamsClient(_httpClient),
+      : streamsClient = StreamClient(_httpClient),
         closedCaptions = ClosedCaptionClient(_httpClient),
         commentsClient = CommentsClient(_httpClient);
 
   /// Gets the metadata associated with the specified video.
   Future<Video> _getVideoFromWatchPage(VideoId videoId) async {
-    var watchPage = await WatchPage.get(_httpClient, videoId.value);
+    final watchPage = await WatchPage.get(_httpClient, videoId.value);
     final playerResponse = watchPage.playerResponse!;
 
     return Video(
-        videoId,
-        playerResponse.videoTitle,
-        playerResponse.videoAuthor,
-        ChannelId(playerResponse.videoChannelId),
-        playerResponse.videoUploadDate ??
-            watchPage.root
-                .querySelector('meta[itemprop=uploadDate]')
-                ?.attributes['content']
-                ?.tryParseDateTime(),
-        playerResponse.videoUploadDate.toString(),
-        playerResponse.videoPublishDate ??
-            watchPage.root
-                .querySelector('meta[itemprop=datePublished]')
-                ?.attributes['content']
-                ?.tryParseDateTime(),
-        playerResponse.videoDescription,
-        playerResponse.videoDuration,
-        ThumbnailSet(videoId.value),
-        playerResponse.videoKeywords,
-        Engagement(playerResponse.videoViewCount, watchPage.videoLikeCount,
-            watchPage.videoDislikeCount),
-        playerResponse.isLive,
-        watchPage);
+      videoId,
+      playerResponse.videoTitle,
+      playerResponse.videoAuthor,
+      ChannelId(playerResponse.videoChannelId),
+      playerResponse.videoUploadDate ??
+          watchPage.root
+              .querySelector('meta[itemprop=uploadDate]')
+              ?.attributes['content']
+              .tryParseDateTime(),
+      playerResponse.videoUploadDate.toString(),
+      playerResponse.videoPublishDate ??
+          watchPage.root
+              .querySelector('meta[itemprop=datePublished]')
+              ?.attributes['content']
+              .tryParseDateTime(),
+      playerResponse.videoDescription,
+      playerResponse.videoDuration,
+      ThumbnailSet(videoId.value),
+      playerResponse.videoKeywords,
+      Engagement(
+        playerResponse.videoViewCount,
+        watchPage.videoLikeCount,
+        watchPage.videoDislikeCount,
+      ),
+      playerResponse.isLive,
+      watchPage,
+    );
   }
 
   /// Get a [Video] instance from a [videoId]

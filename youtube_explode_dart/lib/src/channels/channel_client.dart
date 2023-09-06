@@ -8,6 +8,7 @@ import '../reverse_engineering/pages/watch_page.dart';
 import '../reverse_engineering/youtube_http_client.dart';
 import '../videos/video.dart';
 import '../videos/video_id.dart';
+import 'channel_handle.dart';
 import 'channels.dart';
 
 /// Queries related to YouTube channels.
@@ -22,7 +23,7 @@ class ChannelClient {
   /// which is parsed to a [ChannelId]
   Future<Channel> get(dynamic id) async {
     id = ChannelId.fromString(id);
-    var channelPage = await ChannelPage.get(_httpClient, id.value);
+    final channelPage = await ChannelPage.get(_httpClient, id.value);
 
     return Channel(
       id,
@@ -39,8 +40,26 @@ class ChannelClient {
   Future<Channel> getByUsername(dynamic username) async {
     username = Username.fromString(username);
 
-    var channelPage = await ChannelPage.getByUsername(
-        _httpClient, (username as Username).value);
+    final channelPage = await ChannelPage.getByUsername(
+      _httpClient,
+      (username as Username).value,
+    );
+    return Channel(
+      ChannelId(channelPage.channelId),
+      channelPage.channelTitle,
+      channelPage.channelLogoUrl,
+      channelPage.channelBannerUrl,
+      channelPage.subscribersCount,
+    );
+  }
+
+  Future<Channel> getByHandle(dynamic handle) async {
+    handle = ChannelHandle.fromString(handle);
+
+    final channelPage = await ChannelPage.getByHandle(
+      _httpClient,
+      (handle as ChannelHandle).value,
+    );
     return Channel(
       ChannelId(channelPage.channelId),
       channelPage.channelTitle,
@@ -64,8 +83,8 @@ class ChannelClient {
       aboutPage.joinDate,
       aboutPage.title,
       [
-        for (var e in aboutPage.avatar)
-          Thumbnail(Uri.parse(e['url']), e['height'], e['width'])
+        for (final e in aboutPage.avatar)
+          Thumbnail(Uri.parse(e['url']), e['height'], e['width']),
       ],
       aboutPage.country,
       aboutPage.channelLinks,
@@ -78,7 +97,7 @@ class ChannelClient {
   Future<ChannelAbout> getAboutPageByUsername(dynamic username) async {
     username = Username.fromString(username);
 
-    var page =
+    final page =
         await ChannelAboutPage.getByUsername(_httpClient, username.value);
 
     return ChannelAbout(
@@ -87,8 +106,8 @@ class ChannelClient {
       page.joinDate,
       page.title,
       [
-        for (var e in page.avatar)
-          Thumbnail(Uri.parse(e['url']), e['height'], e['width'])
+        for (final e in page.avatar)
+          Thumbnail(Uri.parse(e['url']), e['height'], e['width']),
       ],
       page.country,
       page.channelLinks,
@@ -99,10 +118,10 @@ class ChannelClient {
   /// that uploaded the specified video.
   Future<Channel> getByVideo(dynamic videoId) async {
     videoId = VideoId.fromString(videoId);
-    var videoInfoResponse = await WatchPage.get(_httpClient, videoId.value);
-    var playerResponse = videoInfoResponse.playerResponse!;
+    final videoInfoResponse = await WatchPage.get(_httpClient, videoId.value);
+    final playerResponse = videoInfoResponse.playerResponse!;
 
-    var channelId = playerResponse.videoChannelId;
+    final channelId = playerResponse.videoChannelId;
     return get(ChannelId(channelId));
   }
 
@@ -110,7 +129,7 @@ class ChannelClient {
   /// If you want a full list of uploads see [getUploadsFromPage]
   Stream<Video> getUploads(dynamic channelId) {
     channelId = ChannelId.fromString(channelId);
-    var playlistId = 'UU${(channelId.value as String).substringAfter('UC')}';
+    final playlistId = 'UU${(channelId.value as String).substringAfter('UC')}';
     return PlaylistClient(_httpClient).getVideos(PlaylistId(playlistId));
   }
 
@@ -118,35 +137,43 @@ class ChannelClient {
   /// This fetches thru all the uploads pages of the channel.
   ///
   /// Use .nextPage() to fetch the next batch of videos.
-  Future<ChannelUploadsList> getUploadsFromPage(dynamic channelId,
-      [VideoSorting videoSorting = VideoSorting.newest]) async {
+  Future<ChannelUploadsList> getUploadsFromPage(
+    dynamic channelId, [
+    VideoSorting videoSorting = VideoSorting.newest,
+  ]) async {
     channelId = ChannelId.fromString(channelId);
     final page = await ChannelUploadPage.get(
-        _httpClient, (channelId as ChannelId).value, videoSorting.code);
+      _httpClient,
+      (channelId as ChannelId).value,
+      videoSorting.code,
+    );
 
     final channel = await get(channelId);
 
     return ChannelUploadsList(
-        page.uploads
-            .map((e) => Video(
-                  e.videoId,
-                  e.videoTitle,
-                  channel.title,
-                  channelId,
-                  e.videoUploadDate.toDateTime(),
-                  e.videoUploadDate,
-                  null,
-                  '',
-                  e.videoDuration,
-                  ThumbnailSet(e.videoId.value),
-                  null,
-                  Engagement(e.videoViews, null, null),
-                  false,
-                ))
-            .toList(),
-        channel.title,
-        channelId,
-        page,
-        _httpClient);
+      page.uploads
+          .map(
+            (e) => Video(
+              e.videoId,
+              e.videoTitle,
+              channel.title,
+              channelId,
+              e.videoUploadDate.toDateTime(),
+              e.videoUploadDate,
+              null,
+              '',
+              e.videoDuration,
+              ThumbnailSet(e.videoId.value),
+              null,
+              Engagement(e.videoViews, null, null),
+              false,
+            ),
+          )
+          .toList(),
+      channel.title,
+      channelId,
+      page,
+      _httpClient,
+    );
   }
 }

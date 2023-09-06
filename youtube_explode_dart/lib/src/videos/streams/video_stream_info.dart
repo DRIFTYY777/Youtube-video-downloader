@@ -32,8 +32,7 @@ extension VideoStreamInfoExtension<T extends VideoStreamInfo> on Iterable<T> {
   Set<String> getAllVideoQualitiesLabel() => map((e) => e.qualityLabel).toSet();
 
   /// Gets the stream with best video quality.
-  ///
-  T get bestQuality => sortByVideoQuality().first; // original code
+  T get bestQuality => sortByVideoQuality().first;
 
   /// Gets the video streams sorted by highest video quality
   /// (then by framerate) in ascending order.

@@ -7,13 +7,13 @@ abstract class CipherOperation {
   String decipher(String input);
 }
 
-/// Slice Operation
-class SliceCipherOperation extends CipherOperation {
+/// Splice Operation
+class SpliceCipherOperation extends CipherOperation {
   /// Index where to perform the operation.
   final int index;
 
-  /// Initialize slice operation.
-  const SliceCipherOperation(this.index);
+  /// Initialize Splice operation.
+  const SpliceCipherOperation(this.index);
 
   @override
   String decipher(String input) => input.substring(index);
@@ -32,8 +32,8 @@ class SwapCipherOperation extends CipherOperation {
 
   @override
   String decipher(String input) {
-    var runes = input.runes.toList();
-    var first = runes[0];
+    final runes = input.runes.toList();
+    final first = runes[0];
     runes[0] = runes[index];
     runes[index] = first;
     return String.fromCharCodes(runes);
@@ -50,7 +50,7 @@ class ReverseCipherOperation extends CipherOperation {
 
   @override
   String decipher(String input) {
-    var runes = input.runes.toList().reversed;
+    final runes = input.runes.toList().reversed;
     return String.fromCharCodes(runes);
   }
 

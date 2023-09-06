@@ -27,7 +27,7 @@ class PlaylistPage extends YoutubePage<_InitialData> {
 
   /// InitialData
   PlaylistPage.id(this.playlistId, _InitialData initialData)
-      : super(null, null, initialData);
+      : super.fromInitialData(initialData);
 
   ///
   Future<PlaylistPage?> nextPage(YoutubeHttpClient httpClient) async {
@@ -46,9 +46,9 @@ class PlaylistPage extends YoutubePage<_InitialData> {
     YoutubeHttpClient httpClient,
     String id,
   ) async {
-    var url = 'https://www.youtube.com/playlist?list=$id&hl=en&persist_hl=1';
+    final url = 'https://www.youtube.com/playlist?list=$id&hl=en&persist_hl=1';
     return retry(httpClient, () async {
-      var raw = await httpClient.getString(url);
+      final raw = await httpClient.getString(url);
       return PlaylistPage.parse(raw, id);
     });
   }
@@ -59,7 +59,7 @@ class PlaylistPage extends YoutubePage<_InitialData> {
 }
 
 class _InitialData extends InitialData {
-  _InitialData(JsonMap root) : super(root);
+  _InitialData(super.root);
 
   late final String? title = root
       .get('metadata')
@@ -93,7 +93,7 @@ class _InitialData extends InitialData {
       ?.getList('stats')
       ?.elementAtSafe(1)
       ?.getT<String>('simpleText')
-      ?.parseInt();
+      .parseInt();
 
   // sidebar.playlistSidebarRenderer.items[0].playlistSidebarPrimaryInfoRenderer.stats
   late final int? videoCount = root
@@ -107,7 +107,7 @@ class _InitialData extends InitialData {
       ?.getList('runs')
       ?.firstOrNull
       ?.getT<String>('text')
-      ?.parseInt();
+      .parseInt();
 
   late final String? continuationToken =
       (videosContent ?? playlistVideosContent)
@@ -215,5 +215,5 @@ class _Video {
       root.get('lengthText')?.getT<String>('simpleText')?.toDuration();
 
   int get viewCount =>
-      root.get('viewCountText')?.getT<String>('simpleText')?.parseInt() ?? 0;
+      root.get('viewCountText')?.getT<String>('simpleText').parseInt() ?? 0;
 }

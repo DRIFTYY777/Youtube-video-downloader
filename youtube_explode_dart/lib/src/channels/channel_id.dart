@@ -17,9 +17,9 @@ class ChannelId with _$ChannelId {
   }
 
   const factory ChannelId._internal(
-
-      /// ID as a string.
-      String value) = _ChannelId;
+    /// ID as a string.
+    String value,
+  ) = _ChannelId;
 
   const ChannelId._();
 
@@ -31,11 +31,6 @@ class ChannelId with _$ChannelId {
     }
     return ChannelId(obj.toString());
   }
-
-/*  ChannelId(String value) : value = parseChannelId(value) ?? '' {
-    if (this.value.isEmpty) {
-      throw ArgumentError.value(value);
-    }*/
 
   /// Returns true if the given id is a valid channel id.
   static bool validateChannelId(String id) {
@@ -65,7 +60,7 @@ class ChannelId with _$ChannelId {
       return url;
     }
 
-    var regMatch = RegExp(r'youtube\..+?/channel/(.*?)(?:\?|&|/|$)')
+    final regMatch = RegExp(r'youtube\..+?/channel/(.*?)(?:\?|&|/|$)')
         .firstMatch(url)
         ?.group(1);
     if (!regMatch.isNullOrWhiteSpace && validateChannelId(regMatch!)) {

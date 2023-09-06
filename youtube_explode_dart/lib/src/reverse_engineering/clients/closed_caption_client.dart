@@ -21,10 +21,12 @@ class ClosedCaptionClient {
 
   ///
   static Future<ClosedCaptionClient> get(
-      YoutubeHttpClient httpClient, Uri url) {
+    YoutubeHttpClient httpClient,
+    Uri url,
+  ) {
     final formatUrl = url.replaceQueryParameters({'fmt': 'srv3'});
     return retry(httpClient, () async {
-      var raw = await httpClient.getString(formatUrl);
+      final raw = await httpClient.getString(formatUrl);
       return ClosedCaptionClient.parse(raw);
     });
   }
@@ -35,7 +37,7 @@ class ClosedCaption {
   final xml.XmlElement root;
 
   ///
-  String get text => root.text;
+  String get text => root.innerText;
 
   ///
   late final Duration offset =
@@ -60,7 +62,7 @@ class ClosedCaptionPart {
   final xml.XmlElement root;
 
   ///
-  String get text => root.text;
+  String get text => root.innerText;
 
   ///
   late final Duration offset =

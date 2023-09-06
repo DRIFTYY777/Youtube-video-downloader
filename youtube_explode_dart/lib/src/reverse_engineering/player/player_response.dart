@@ -47,8 +47,9 @@ class PlayerResponse {
 
   ///
   Duration get videoDuration => Duration(
-      seconds:
-          int.parse(root.get('videoDetails')!.getT<String>('lengthSeconds')!));
+        seconds:
+            int.parse(root.get('videoDetails')!.getT<String>('lengthSeconds')!),
+      );
 
   ///
   List<String> get videoKeywords =>
@@ -72,14 +73,34 @@ class PlayerResponse {
           .get('playabilityStatus')
           ?.get('errorScreen')
           ?.get('playerLegacyDesktopYpcTrailerRenderer')
-          ?.getT('trailerVideoId') ??
-      Uri.splitQueryString(root
-              .get('playabilityStatus')
-              ?.get('errorScreen')
-              ?.get('')
-              ?.get('ypcTrailerRenderer')
-              ?.getT('playerVars') ??
-          '')['video_id'];
+          ?.getT<String>('trailerVideoId') ??
+      Uri.splitQueryString(
+        root
+                .get('playabilityStatus')
+                ?.get('errorScreen')
+                ?.get('')
+                ?.get('ypcTrailerRenderer')
+                ?.getT<String>('playerVars') ??
+            '',
+      )['video_id'] ??
+      root
+          .get('playabilityStatus')
+          ?.get("errorScreen")
+          ?.get("ypcTrailerRenderer")
+          ?.getT<String>("playerResponse")
+          // From https://github.com/Tyrrrz/YoutubeExplode
+          // YouTube uses weird base64-like encoding here that I don't know how to deal with.
+          // It's supposed to have JSON inside, but if extracted as is, it contains garbage.
+          // Luckily, some of the text gets decoded correctly, which is enough for us to
+          // extract the preview video ID using regex.
+          ?.replaceAll('-', '+')
+          .replaceAll('_', '/')
+          .pipe(base64.decode)
+          .pipe(utf8.decode)
+          .pipe(
+            (value) => RegExp('video_id=(.{11})').firstMatch(value)?.group(1),
+          )
+          ?.nullIfWhitespace;
 
   ///
   bool get isLive => root.get('videoDetails')?.getT<bool>('isLive') ?? false;
@@ -113,7 +134,7 @@ class PlayerResponse {
   ///
   late final List<StreamInfoProvider> streams = [
     ...muxedStreams,
-    ...adaptiveStreams
+    ...adaptiveStreams,
   ];
 
   ///
@@ -172,9 +193,10 @@ class _StreamInfo extends StreamInfoProvider {
 
   @override
   late final int? contentLength = int.tryParse(
-      root.getT<String>('contentLength') ??
-          _contentLenExp.firstMatch(url)?.group(1) ??
-          '');
+    root.getT<String>('contentLength') ??
+        _contentLenExp.firstMatch(url)?.group(1) ??
+        '',
+  );
 
   @override
   late final int? framerate = root.getT<int>('fps');
@@ -185,7 +207,8 @@ class _StreamInfo extends StreamInfoProvider {
 
   @override
   late final String? signatureParameter = Uri.splitQueryString(
-          root.getT<String>('cipher') ?? '')['sp'] ??
+        root.getT<String>('cipher') ?? '',
+      )['sp'] ??
       Uri.splitQueryString(root.getT<String>('signatureCipher') ?? '')['sp'];
 
   @override
@@ -221,7 +244,7 @@ class _StreamInfo extends StreamInfoProvider {
   late final MediaType codec = _getMimeType()!;
 
   MediaType? _getMimeType() {
-    var mime = root.getT<String>('mimeType');
+    final mime = root.getT<String>('mimeType');
     if (mime == null) {
       return null;
     }
@@ -248,4 +271,8 @@ class _StreamInfo extends StreamInfoProvider {
   final StreamSource source;
 
   _StreamInfo(this.root, this.source);
+}
+
+extension PipeExt<T extends Object?> on T {
+  R pipe<R>(R Function(T value) f) => f(this);
 }

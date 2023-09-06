@@ -1,14 +1,15 @@
 import 'package:collection/collection.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:meta/meta.dart';
 import 'package:xml/xml.dart' as xml;
 
-import '../extensions/helpers_extension.dart';
 import '../retry.dart';
 import 'models/fragment.dart';
 import 'models/stream_info_provider.dart';
 import 'youtube_http_client.dart';
 
 ///
+@internal
 class DashManifest {
   static final _urlSignatureExp = RegExp(r'/s/(.*?)(?:/|$)');
 
@@ -27,7 +28,7 @@ class DashManifest {
   ///
   static Future<DashManifest> get(YoutubeHttpClient httpClient, dynamic url) {
     return retry(httpClient, () async {
-      var raw = await httpClient.getString(url);
+      final raw = await httpClient.getString(url);
       return DashManifest.parse(raw);
     });
   }
@@ -42,17 +43,21 @@ class DashManifest {
   _SegmentTimeline? extractSegmentTimeline(xml.XmlElement source) {
     final segmentTimeline = source.getElement('SegmentTimeline');
     if (segmentTimeline != null) {
-      return _SegmentTimeline(segmentTimeline.findAllElements('S').map((e) {
-        final d = int.tryParse(e.getAttribute('d') ?? '0')!;
-        final r = int.tryParse(e.getAttribute('r') ?? '0')!;
-        return _S(d, r);
-      }).toList());
+      return _SegmentTimeline(
+        segmentTimeline.findAllElements('S').map((e) {
+          final d = int.tryParse(e.getAttribute('d') ?? '0')!;
+          final r = int.tryParse(e.getAttribute('r') ?? '0')!;
+          return _S(d, r);
+        }).toList(),
+      );
     }
     return null;
   }
 
   _MsInfo extractMultiSegmentInfo(
-      xml.XmlElement element, _MsInfo msParentInfo) {
+    xml.XmlElement element,
+    _MsInfo msParentInfo,
+  ) {
     final msInfo = msParentInfo.copy(); // Copy
 
     final segmentList = element.getElement('SegmentList');
@@ -65,7 +70,7 @@ class DashManifest {
       final segmentUrlsSE = segmentList.findAllElements('SegmentURL');
       if (segmentUrlsSE.isNotEmpty) {
         msInfo.segmentUrls = [
-          for (final segment in segmentUrlsSE) segment.getAttribute('media')!
+          for (final segment in segmentUrlsSE) segment.getAttribute('media')!,
         ];
       }
     } else {
@@ -119,28 +124,28 @@ class DashManifest {
             continue;
           }
           final representationAttrib = {
-            for (var e in adaptionSet.attributes) e.name.local: e.value,
-            for (var e in representation.attributes) e.name.local: e.value,
+            for (final e in adaptionSet.attributes) e.name.local: e.value,
+            for (final e in representation.attributes) e.name.local: e.value,
           };
 
           final mimeType = MediaType.parse(representationAttrib['mimeType']!);
 
           if (mimeType.type == 'video' || mimeType.type == 'audio') {
             // Extract the base url
-            var baseUrl = JoinedIterable<xml.XmlElement>([
-              representation.childElements,
-              adaptionSet.childElements,
-              period.childElements,
-              root.childElements
-            ])
+            final baseUrl = <xml.XmlElement>[
+              ...representation.childElements,
+              ...adaptionSet.childElements,
+              ...period.childElements,
+              ...root.childElements,
+            ]
                 .firstWhereOrNull((e) {
-                  final baseUrlE = e.getElement('BaseURL')?.text.trim();
+                  final baseUrlE = e.getElement('BaseURL')?.innerText.trim();
                   if (baseUrlE == null) {
                     return false;
                   }
                   return baseUrlE.contains(RegExp('^https?://'));
                 })
-                ?.text
+                ?.innerText
                 .trim();
 
             if (baseUrl == null || !baseUrl.startsWith('http')) {
@@ -176,17 +181,20 @@ class DashManifest {
               if (representationMsInfo.fragments != null &&
                   representationMsInfo.initializationUrl != null)
                 Fragment(representationMsInfo.initializationUrl!),
-              ...?representationMsInfo.fragments
+              ...?representationMsInfo.fragments,
             ];
 
-            formats.add(_StreamInfo(
+            formats.add(
+              _StreamInfo(
                 int.parse(representationAttrib['id']!),
                 baseUrl,
                 mimeType,
                 int.tryParse(representationAttrib['width'] ?? ''),
                 int.tryParse(representationAttrib['height'] ?? ''),
                 int.tryParse(representationAttrib['frameRate'] ?? ''),
-                fragments));
+                fragments,
+              ),
+            );
           }
         }
       }
@@ -239,8 +247,15 @@ class _StreamInfo extends StreamInfoProvider {
   @override
   StreamSource get source => StreamSource.dash;
 
-  _StreamInfo(this.tag, this.url, this.codec, this.videoWidth, this.videoHeight,
-      this.framerate, this.fragments);
+  _StreamInfo(
+    this.tag,
+    this.url,
+    this.codec,
+    this.videoWidth,
+    this.videoHeight,
+    this.framerate,
+    this.fragments,
+  );
 }
 
 class _SegmentTimeline {

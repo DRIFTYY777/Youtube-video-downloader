@@ -19,6 +19,7 @@ class DownloadVideo {
     //
     final yt = YoutubeExplode();
     //
+
     String filter = url
         .replaceAll(" ", "")
         .replaceAll("?feature=share", "")
@@ -27,16 +28,13 @@ class DownloadVideo {
     String tempDir = await systemPath.pathProvider();
     try {
       await _download(filter, tempDir, updatingProgresbar);
-
       if (isHighQuality == true) {
         finishedOutput =
             things.combineAudioVideo(tempAudioOutput, tempVideoOutput);
       }
       yt.close();
       progressBar_G = 0;
-
       things.eatItSnackBar("Downloaded");
-
       if (Platform.isAndroid) {
         MediaScanner.loadMedia(
             path: downloadedPath.path); //update gallery after download
@@ -68,76 +66,97 @@ class DownloadVideo {
     // Get the video manifest.
     var manifest = await yt.videos.streamsClient.getManifest(id);
 
-    if (dropdownValue == "Audio only") {
-      streams = manifest.audioOnly;
-      isAudio = true;
-    }
-    //
-    else if (dropdownValue == 'Low 144p') {
-      streams = manifest.muxed;
-    }
-    //
-    else if (dropdownValue == 'Low 240p') {
-      streams = manifest.muxed
-          .where((element) => element.videoQuality == VideoQuality.low240);
-    }
-    //
-    else if (dropdownValue == 'Medium 360p') {
-      streams = manifest.muxed
-          .where((element) => element.videoQuality == VideoQuality.medium360);
-    }
-    //
-    else if (dropdownValue == 'Medium 480p SD') {
-      streams = manifest.muxed
-          .where((element) => element.videoQuality == VideoQuality.medium480);
-    }
-    //
-    else if (dropdownValue == 'High 720p HD') {
-      streams = manifest.muxed
-          .where((element) => element.videoQuality == VideoQuality.high720);
-    }
-    //
-    else if (dropdownValue == 'High 1080p FHD') {
-      streams = manifest.videoOnly.where((element) =>
-          element.videoQuality == VideoQuality.high1080 &&
-          element.container.name == "webm");
-      isHighQuality = true;
-    }
+    switch (dropdownValue) {
+      case "Audio only":
+        streams = manifest.audioOnly;
+        isAudio = true;
+        break;
 
-    //
-    else if (dropdownValue == 'High 1440p QHD/2K') {
-      streams = manifest.videoOnly.where((element) =>
-          element.videoQuality == VideoQuality.high1440 &&
-          element.container.name == "webm");
-      isHighQuality = true;
-    }
-    //
-    else if (dropdownValue == 'High 2160p UHD/4K') {
-      streams = manifest.videoOnly.where((element) =>
-          element.videoQuality == VideoQuality.high2160 &&
-          element.container.name == "webm");
-      isHighQuality = true;
-    }
-    //
-    else if (dropdownValue == 'High 2880p 5K') {
-      streams = manifest.videoOnly.where((element) =>
-          element.videoQuality == VideoQuality.high2880 &&
-          element.container.name == "webm");
-      isHighQuality = true;
-    }
-    //
-    else if (dropdownValue == 'High 3072p 6K') {
-      streams = manifest.videoOnly.where((element) =>
-          element.videoQuality == VideoQuality.high3072 &&
-          element.container.name == "webm");
-      isHighQuality = true;
-    }
-    //
-    else if (dropdownValue == 'High 4320p 8K') {
-      streams = manifest.videoOnly.where((element) =>
-          element.videoQuality == VideoQuality.high4320 &&
-          element.container.name == "webm");
-      isHighQuality = true;
+      case "Low 144p":
+        streams = manifest.muxed;
+        break;
+
+      case "Low 240p":
+        streams = manifest.muxed
+            .where((element) => element.videoQuality == VideoQuality.low240)
+            .toList();
+        break;
+
+      case "Medium 360p":
+        streams = manifest.muxed
+            .where((element) => element.videoQuality == VideoQuality.medium360)
+            .toList();
+        break;
+
+      case "Medium 480p SD":
+        streams = manifest.muxed
+            .where((element) => element.videoQuality == VideoQuality.medium480)
+            .toList();
+        break;
+
+      case "High 720p HD":
+        streams = manifest.muxed
+            .where((element) => element.videoQuality == VideoQuality.high720)
+            .toList();
+        break;
+
+      case "High 1080p FHD":
+        streams = manifest.videoOnly
+            .where((element) =>
+                element.videoQuality == VideoQuality.high1080 &&
+                element.container.name == "webm")
+            .toList();
+        isHighQuality = true;
+        break;
+
+      case "High 1440p QHD/2K":
+        streams = manifest.videoOnly
+            .where((element) =>
+                element.videoQuality == VideoQuality.high1440 &&
+                element.container.name == "webm")
+            .toList();
+        isHighQuality = true;
+        break;
+
+      case "High 2160p UHD/4K":
+        streams = manifest.videoOnly
+            .where((element) =>
+                element.videoQuality == VideoQuality.high2160 &&
+                element.container.name == "webm")
+            .toList();
+        isHighQuality = true;
+        break;
+
+      case "High 2880p 5K":
+        streams = manifest.videoOnly
+            .where((element) =>
+                element.videoQuality == VideoQuality.high2880 &&
+                element.container.name == "webm")
+            .toList();
+        isHighQuality = true;
+        break;
+
+      case "High 3072p 6K":
+        streams = manifest.videoOnly
+            .where((element) =>
+                element.videoQuality == VideoQuality.high3072 &&
+                element.container.name == "webm")
+            .toList();
+        isHighQuality = true;
+        break;
+
+      case "High 4320p 8K":
+        streams = manifest.videoOnly
+            .where((element) =>
+                element.videoQuality == VideoQuality.high4320 &&
+                element.container.name == "webm")
+            .toList();
+        isHighQuality = true;
+        break;
+
+      default:
+        // Handle the case when the dropdownValue doesn't match any of the cases
+        break;
     }
 
     // Get the audio track with the highest bitrate.
@@ -227,6 +246,7 @@ class DownloadVideo {
     var videoStream = yt.videos.streamsClient.get(audio);
     // Compose the file name removing the unallowed characters in windows.
     var fileName = '${video.title}.${audio.container.name}'
+        .replaceAll(".mp4", "")
         .replaceAll(r'\', '')
         .replaceAll('/', '')
         .replaceAll('*', '')

@@ -5,7 +5,7 @@ part 'bitrate.g.dart';
 
 /// Encapsulates bitrate.
 @freezed
-class Bitrate with Comparable<Bitrate>, _$Bitrate {
+class Bitrate with _$Bitrate implements Comparable<Bitrate> {
   /// Kilobits per second.
   double get kiloBitsPerSecond => bitsPerSecond / 1024;
 
@@ -18,9 +18,9 @@ class Bitrate with Comparable<Bitrate>, _$Bitrate {
   /// Initializes an instance of [Bitrate]
   //@With<Comparable<Bitrate>>()
   const factory Bitrate(
-
-      /// Bits per second.
-      int bitsPerSecond) = _Bitrate;
+    /// Bits per second.
+    int bitsPerSecond,
+  ) = _Bitrate;
 
   factory Bitrate.fromJson(Map<String, dynamic> json) =>
       _$BitrateFromJson(json);

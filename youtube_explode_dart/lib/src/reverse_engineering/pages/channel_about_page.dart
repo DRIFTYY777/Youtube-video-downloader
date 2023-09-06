@@ -36,11 +36,11 @@ class ChannelAboutPage extends YoutubePage<_InitialData> {
 
   ///
   static Future<ChannelAboutPage> get(YoutubeHttpClient httpClient, String id) {
-    var url = 'https://www.youtube.com/channel/$id/about?hl=en';
+    final url = 'https://www.youtube.com/channel/$id/about?hl=en';
 
     return retry(httpClient, () async {
-      var raw = await httpClient.getString(url);
-      var result = ChannelAboutPage.parse(raw);
+      final raw = await httpClient.getString(url);
+      final result = ChannelAboutPage.parse(raw);
 
       return result;
     });
@@ -48,12 +48,14 @@ class ChannelAboutPage extends YoutubePage<_InitialData> {
 
   ///
   static Future<ChannelAboutPage> getByUsername(
-      YoutubeHttpClient httpClient, String username) {
-    var url = 'https://www.youtube.com/user/$username/about?hl=en';
+    YoutubeHttpClient httpClient,
+    String username,
+  ) {
+    final url = 'https://www.youtube.com/user/$username/about?hl=en';
 
     return retry(httpClient, () async {
-      var raw = await httpClient.getString(url);
-      var result = ChannelAboutPage.parse(raw);
+      final raw = await httpClient.getString(url);
+      final result = ChannelAboutPage.parse(raw);
 
       return result;
     });
@@ -65,7 +67,7 @@ final _urlExp = RegExp(r'q=([^=]*)$');
 class _InitialData extends InitialData {
   late final JsonMap content = _getContentContext();
 
-  _InitialData(JsonMap root) : super(root);
+  _InitialData(super.root);
 
   JsonMap _getContentContext() {
     return root
@@ -89,29 +91,49 @@ class _InitialData extends InitialData {
 
   late final List<ChannelLink> channelLinks = content
           .getList('primaryLinks')
-          ?.map((e) => ChannelLink(
+          ?.map(
+            (e) => ChannelLink(
               e.get('title')?.getT<String>('simpleText') ?? '',
-              extractUrl(e
-                      .get('navigationEndpoint')
-                      ?.get('commandMetadata')
-                      ?.get('webCommandMetadata')
-                      ?.getT<String>('url') ??
-                  e
-                      .get('navigationEndpoint')
-                      ?.get('urlEndpoint')
-                      ?.getT<String>('url') ??
-                  ''),
-              Uri.parse(e
-                      .get('icon')
-                      ?.getList('thumbnails')
-                      ?.firstOrNull
-                      ?.getT<String>('url') ??
-                  '')))
+              extractUrl(
+                e
+                        .get('navigationEndpoint')
+                        ?.get('commandMetadata')
+                        ?.get('webCommandMetadata')
+                        ?.getT<String>('url') ??
+                    e
+                        .get('navigationEndpoint')
+                        ?.get('urlEndpoint')
+                        ?.getT<String>('url') ??
+                    '',
+              ),
+              Uri.parse(
+                e
+                        .get('icon')
+                        ?.getList('thumbnails')
+                        ?.firstOrNull
+                        ?.getT<String>('url') ??
+                    '',
+              ),
+            ),
+          )
           .toList() ??
+      content
+          .getList('links')
+          ?.map((e) => e['channelExternalLinkViewModel'])
+          .whereNotNull()
+          .cast<Map<String, dynamic>>()
+          .map((e) {
+        return ChannelLink(
+          e.get('title')?.getT<String>('content') ?? '',
+          Uri.parse('https://${e.get('link')!.getT<String>('content')!}'),
+          // Youtube doesn't provide icons anymore.
+          Uri(),
+        );
+      }).toList() ??
       [];
 
   late final int? viewCount =
-      content.get('viewCountText')?.getT<String>('simpleText')?.parseInt();
+      content.get('viewCountText')?.getT<String>('simpleText').parseInt();
 
   late final String? joinDate =
       content.get('joinedDateText')?.getList('runs')?[1].getT<String>('text');
