@@ -82,9 +82,7 @@ bool isAudio = false;
 TextEditingController controller = TextEditingController();
 
 class _MyHomePageState extends State<MyHomePage> {
-  ///
   late DownloadVideo downloadVideo;
-
   @override
   void initState() {
     super.initState();
@@ -109,6 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
+      // resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -215,7 +214,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       downloadVideo.downloadCancel();
                       setState(() {});
-                      print("Cancel Download");
                     },
                   ),
                 ),
@@ -232,10 +230,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   fontSize: 18,
                 ),
                 borderRadius: BorderRadius.circular(8),
-                dropdownColor: Color.fromARGB(255, 0, 0, 0),
+                dropdownColor: const Color.fromARGB(255, 0, 0, 0),
                 underline: Container(
                   height: 2,
-                  color: Color.fromARGB(255, 43, 224, 248),
+                  color: const Color.fromARGB(255, 43, 224, 248),
                 ),
                 onChanged: (String? value) {
                   // This is called when the user selects an item.

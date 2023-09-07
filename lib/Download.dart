@@ -60,6 +60,8 @@ class DownloadVideo {
 
     var streams, file;
 
+
+
     // Get video metadata.
     var video = await yt.videos.get(id);
 
@@ -213,13 +215,11 @@ class DownloadVideo {
           progressBar_G = ((count / len) * 100).ceil();
           tempVideoOutput.add(data);
           print("Progress   $progressBar_G");
-          // setState(() {});
           update(progressBar_G);
         }
       })(),
       _downloadSong(id)
     ]);
-    //await output.close();
     await tempVideoOutput.flush();
     await tempVideoOutput.close();
   }
