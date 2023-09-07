@@ -87,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     ReceiveSharingIntent.getTextStream().listen(
       (String value) {
@@ -110,7 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      // resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -202,11 +200,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         });
                       });
                     }
-
-                    ///
-                    //things.changeVideoFormat(
-                    //    'C:\\Users\\Driftyy_777\\Downloads\\Not_Working.mp4',
-                    //    'C:\\Users\\Driftyy_777\\Downloads\\Working.mp4');
                   },
                   color: const Color.fromARGB(255, 43, 224, 248),
                   child: const Text('Download Video'),
@@ -220,27 +213,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     tooltip: 'Cancel Download / Clear',
                     onPressed: () {
-                      //progressBar_G = 0;
-                      //final yt = YoutubeExplode();
-                      //yt.close();
-                      // url_bae = "";
-                      // controller.text = "";
-                      // videoName = "";
-                      // isAudio = false;
-                      //thumbnails = thumb2;
                       downloadVideo.downloadCancel();
                       setState(() {});
                       print("Cancel Download");
                     },
                   ),
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      things.combineAudioVideo(
-                          "C:\\Users\\Driftyy_777\\Downloads\\Manali Trance.mp3",
-                          "C:\\Users\\Driftyy_777\\Downloads\\Manali Trance.webm");
-                    },
-                    child: Text("Download Audio"))
               ],
             ),
             Padding(
