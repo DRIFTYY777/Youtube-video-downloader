@@ -60,8 +60,6 @@ class DownloadVideo {
 
     var streams, file;
 
-
-
     // Get video metadata.
     var video = await yt.videos.get(id);
 
