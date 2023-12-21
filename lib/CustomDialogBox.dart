@@ -17,7 +17,7 @@ class CustomDialogBox {
             ElevatedButton(
               child: const Text('Play'),
               onPressed: () {
-                print("open");
+                debugPrint("open");
                 isAudio = false;
                 if (filePath.contains(".mp4.mp3")) {
                   OpenFile.open(filePath, type: "audio/mp3");
@@ -33,7 +33,7 @@ class CustomDialogBox {
             ),
             ElevatedButton(
               onPressed: () {
-                print("cancel");
+                debugPrint("cancel");
                 final yt = YoutubeExplode();
                 yt.close();
                 isAudio = false;
@@ -42,7 +42,7 @@ class CustomDialogBox {
                 controller.text = "";
                 videoName = "";
                 thumbnails = thumb2;
-                print("Cancel Download");
+                debugPrint("Cancel Download");
                 // setState(() {}); /////////////////////////////
                 Navigator.of(context).pop(false);
               },
