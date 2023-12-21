@@ -47,7 +47,7 @@ class DownloadVideo {
         things
             .eatItSnackBar("Video not available in this quality! Try another");
       } else {
-        print(e);
+        debugPrint(e.toString());
         things.eatItSnackBar(e.toString());
       }
     }
@@ -182,7 +182,7 @@ class DownloadVideo {
       file = File('$dir/$fileName');
     }
 
-    print(file.path);
+    debugPrint(file.path);
     downloadedPath = file;
 
     // Delete the file if exists.
@@ -204,7 +204,7 @@ class DownloadVideo {
     // Create the message and set the cursor position.
     var msg = 'Downloading ${video.title}.${audio.container.name}';
     videoName = '${video.title}.${audio.container.name}';
-    print(msg);
+    debugPrint(msg);
 
     await Future.wait([
       (() async {
@@ -212,7 +212,7 @@ class DownloadVideo {
           count += data.length;
           progressBar_G = ((count / len) * 100).ceil();
           tempVideoOutput.add(data);
-          print("Progress   $progressBar_G");
+          debugPrint("Progress   $progressBar_G");
           update(progressBar_G);
         }
       })(),
@@ -254,7 +254,7 @@ class DownloadVideo {
         .replaceAll('>', '')
         .replaceAll('|', '');
     file = File('$tempDir/$fileName.mp3');
-    print(file.path);
+    debugPrint(file.path);
     downloadedPath = file;
     // Delete the file if exists.
     if (file.existsSync()) {
@@ -269,7 +269,7 @@ class DownloadVideo {
     //await output.close();
     await tempAudioOutput.flush();
     await tempAudioOutput.close();
-    print(tempAudioOutput);
+    debugPrint(tempAudioOutput);
     isHighQuality == true;
     return tempAudioOutput;
   }

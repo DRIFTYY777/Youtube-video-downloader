@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       onError: (err) {
         things.eatItSnackBar("Try again!");
-        print("getLinkStream error: $err");
+       debugPrint("getLinkStream error: $err");
       },
     );
     downloadVideo = DownloadVideo(context);
@@ -239,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // This is called when the user selects an item.
                   setState(() {
                     dropdownValue = value!;
-                    print(dropdownValue);
+                    debugPrint(dropdownValue);
                   });
                 },
                 items: list.map<DropdownMenuItem<String>>(

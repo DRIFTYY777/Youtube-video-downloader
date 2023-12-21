@@ -57,7 +57,7 @@ class Things {
         Permission.location,
         Permission.storage,
       ].request();
-      print(statuses[Permission.location]);
+      debugPrint(statuses[Permission.location].toString());
     }
     // You can can also directly ask the permission about its status.
     if (await Permission.storage.isRestricted) {
